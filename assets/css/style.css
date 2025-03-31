@@ -1,0 +1,608 @@
+.nav-buttons {
+   margin-left: 50%;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1{
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+h2{
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+h3{
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+h4{
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+h5{
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+h6{
+    color: #d8d8d8;
+}
+
+button{
+    font-size: 0.8rem;
+    font-weight: 900;
+    padding: 13px 30px;
+    border: none;
+    outline: none;
+    background-color: #ff0000;
+    color: #d8d8d8;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.5s ease;
+}
+
+button:hover{
+    background-color: #d8d8d8;
+    color: #ff0000;
+}
+.navbar{
+    font-size: 16px;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    top: 0;
+    left: 0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-light .navbar-nav .nav-link{
+    padding: 0 20px;
+    color: #000;
+    transition: 0.4s ease;
+}
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar i:hover,
+.navbar-light .navbar-nav .nav-link.active
+.navbar i:hover{
+    color: #ff0000;
+}
+
+.navbar i{
+    font-size: 1.2rem;
+    padding: 0 0.7px;
+    transition: 0.4s ease;
+    font-weight: 900;
+    cursor: pointer;
+    margin-left: 5px;
+    color: #000;
+
+}
+
+.navbar .brand{
+    color: #000000;
+    margin: 3px 5px;
+    font-family: 'Dancing Script', 'san serif';
+    font-size: 1.5rem;
+}
+
+@media only screen and (max-width: 990px){
+    .nav-buttons{
+        margin: 10px;
+    }
+    .nav-buttons ul{
+        margin: 1rem;
+        justify-content: flex-start;
+        align-items: flex-start;
+        text-align: left;
+    }
+    .nav-buttons ul .fas{
+        margin: 20ox 5px 10px 20px;
+
+    }
+}
+
+#home{
+    background-image: url(../image/back.jpg);
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position-x:150px;
+    background-position-y: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:flex-start;
+}
+
+#home span{
+    color: #ff0000;
+}
+#home h1{
+    color: #d8d8d8;
+}
+#home h5{
+    color: #d8d8d8;
+}
+#home p{
+    color: #d8d8d8;
+}
+
+#new .one img{
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#new .one{
+    position: relative;
+}
+
+#new .one .details{
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #ff0000;
+    font-weight: bold;
+    transition: 0.4s ease;
+    opacity: 0.8;
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+}
+#new .one .details:hover{
+    background-color: rgb(58, 57, 57);
+}
+
+#new .one:nth-child(1) .details{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: start;
+}
+
+#new .one:nth-child(2) .details{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#new .one:nth-child(3) .details{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: end;
+}
+
+/* Product */
+
+.product{
+    width: 250px; /* Ensure the container is consistent */
+  margin: 0 auto; /* Center align products if needed */
+}
+.product img{
+  width: 100%; /* Makes the image fill the container width */
+  height: auto; /* Maintains the aspect ratio */
+  object-fit: cover; /* Ensures the image fills the set dimensions without distortion */
+  max-width: 250px; /* Optional: Restrict the maximum width for uniformity */
+  max-height: 250px; /* Optional: Restrict the maximum height for uniformity */
+  border-radius: 8px; /* Optional: Adds rounded corners */
+}
+
+.product:hover img{
+    opacity: 0.7;
+}
+
+.shop-buy-btn{
+    background-color: #ff0000;
+    color: #ffffff;
+    opacity: 1;
+    text-decoration: none;
+}
+
+hr{
+    width: 30px;
+    height: 3px !important;
+    opacity: 1 !important;
+    background-color: #ff0000;
+}
+
+.star{
+    padding: 10px 0;
+}
+
+.star i{
+    color: goldenrod;
+    font-size: 0.9rem;
+}
+
+#banner{
+    background-image: url(../image/banner.jpg);
+    width: 100%;
+    height: 60vh;
+    background-size: cover;
+    background-position-x:center;
+    background-position-y: 80px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:flex-start;
+}
+#banner h4{
+    color: #d8d8d8;
+}
+#banner h1{
+    color: #d8d8d8;
+}
+#banner span{
+    color: #ff0000;
+}
+
+footer{
+    background-color: #000;
+}
+
+footer h5{
+    color: #d8d8d8;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+ 
+footer li{
+    padding-bottom: 4px;
+}
+
+footer li a{
+    font-size: 0.8rem;
+    color: #686565;
+    text-decoration: none;
+}
+
+footer li a:hover{
+    color:#ffffff;
+}
+
+footer .copyright a{
+    color: black;
+    height: 35px;
+    width: 35px;
+    background-color: #ffffff;
+    display: inline-block;
+    text-align: center;
+    line-height: 38px;
+    border-radius: 40%;
+    transition:0.3s ease;
+    margin: 0 5px;
+}
+
+footer .copyright a:hover{
+    color: #ffffff;
+    background-color: #ff0000;
+
+}
+footer .copyright a i{
+    font-size: 1.2rem;
+}
+
+
+footer p{
+    color: #686565;
+}
+
+footer .copyright img{
+    width: 40%;
+}
+
+.logo{
+    width: 50px;
+    height: 50px;
+}
+
+.small-img-group{
+    display: flex;
+    justify-content: space-between;
+}
+.small-img-col{
+    flex-basis: 24%;
+    cursor: pointer;
+}
+
+.single-product input{
+    width: 50px;
+    height: 40px;
+    padding-left: 10px;
+    font-size: 15px;
+    margin-right: 10px;
+}
+.single-product input:focus{
+    outline: none;
+}
+
+.single-product .buy-btn{
+    background-color: #ff0000;
+    opacity: 1;
+    transition: 0.4s all;
+}
+
+.single-product .buy-btn:hover{
+    background-color: #ffffff;
+    color: #ff0000;
+}
+
+/* Cart */
+
+.cart table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart .product-info{
+    display: flex;
+    flex-wrap: wrap;
+
+}
+.cart th{
+    text-align: left;
+    padding: 5px 10px;
+    color: #ffffff;
+    background-color: #ff0000;
+}
+
+.cart td{
+    padding: 10px 20px;
+}
+
+.cart td img{
+    width: 80px;
+    height: 80px;
+    margin-right: 10px;
+}
+
+.cart td input{
+    width: 40px;
+    height: 30px;
+    padding: 5px;
+}
+.cart td a{
+    color: #ff0000;
+}
+
+.cart .remove-btn{
+    color: #ff0000;
+    text-decoration: none;
+    font-size: 14px;
+    background-color:white ;
+    border: none;
+    width: 100%;
+}
+
+.cart .remove-btn:hover{
+    color: #000;
+}
+
+.cart .edit-btn{
+    color: #ff0000;
+    text-decoration: none;
+    font-size: 15px;
+    background-color: #ffffff;
+    border: none;
+}
+
+.cart .edit-btn:hover{
+    color: #000;
+}
+
+.cart .product-info p{
+    margin: 3px;
+}
+
+.cart-total{
+    display: flex;
+    justify-content: flex-end;
+}
+.cart-total table{
+    width: 100%;
+    max-width: 500px;
+    border-top: 3px solid #ff0000;
+}
+td:last-child{
+    text-align: right;
+}
+th:last-child{
+    text-align: right;
+}
+.checkout-container{
+    display: flex;
+    justify-content: flex-end;
+}
+.checkout-btn{
+ color: #ffffff;
+ background-color: #ff0000;
+ display:flex;
+ justify-content: flex-end;
+}
+
+/* Login */
+
+#login-form{
+    width: 50%;
+    margin: 5px auto;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid #ff0000;
+}
+#login-form input{
+    width: 50%;
+    margin: 5px auto;
+}
+#login-form #login-btn{
+    background-color: #ff0000;
+    color: #ffffff;
+}
+#login-form #register-url {
+    color: #ff0000;
+}
+
+/* Register */
+
+#register-form{
+    width: 50%;
+    margin: 5px auto;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid #ff0000;
+}
+#register-form input{
+    width: 50%;
+    margin: 5px auto;
+}
+#register-form #register-btn{
+    background-color: #ff0000;
+    color: #ffffff;
+}
+#register-form #login-url {
+    color: #ff0000;
+}
+
+/* Account */
+
+#account-form{
+    width: 50%;
+    margin: 35px auto;
+    text-align: center;
+    padding: 20px;
+}
+#account-form input{
+    margin: 5px auto;
+}
+#account-form #change-pass-btn{
+    background-color: #ff0000;
+    color: #ffffff;
+}
+.account-info #order-btn, #logout-btn{
+    color: #ff0000;
+
+}
+
+/* Order */
+.order table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.order .product-info{
+    display: flex;
+    flex-wrap: wrap;
+}
+.order th{
+    padding: 5px 10px;
+    color: #ffffff;
+    background-color: #ff0000;
+
+}
+
+.order td{
+    padding: 10px 20px;
+}
+.order td img{
+    width: 80px;
+    height: 80px;
+    margin-right: 10px;
+}
+
+#orders .order-details-btn{
+    color: #ffffff;
+    background-color: #ff0000;
+}
+
+/* Checkout */
+#checkout-form .checkout-small-element{
+    display: inline-block;
+    width: 48%;
+    margin: 10px auto;   
+}
+#checkout-form .checkout-large-element{
+    width: 96%;
+}
+#checkout-form .checkout-btn-container{
+    margin: 10px;
+    text-align: right;
+    margin-right: 40px;
+}
+#checkout-form #checkout-btn{
+    background-color: #ff0000;
+    color: #ffffff;
+}
+/* Contact */
+#contact span{
+    color: #ff0000;
+}
+
+/* Filter */    
+/* Filter Sidebar */
+#search {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+aside {
+    border-right: 1px solid #ccc;
+}
+
+/* Contactus */  
+.map-container {
+    width: 90%;
+    max-width: 500px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.contact-details {
+    background: #f8f9fa;
+    width: 90%;
+    max-width: 500px;
+    text-align: left;
+    font-size: 1.1rem;
+}
+
+.contact-details p {
+    margin: 10px 0;
+    font-weight: 500;
+}
+
+.contact-details i {
+    font-size: 1.3rem;
+    margin-right: 10px;
+}
+
+/* Added spacing to move the map down */
+.mt-4 {
+    margin-top: 50px;
+}
+
+.cart-quantity{
+    background-color: #ff0000;
+    color: #ffffff;
+    padding: 2px 5px;
+    border-radius: 50%;
+    margin: -5px;
+    font-size: 0.7rem;
+}
