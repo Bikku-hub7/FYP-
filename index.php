@@ -91,7 +91,7 @@ include('layouts/header.php');
               <?php include('server/get_yamaha.php'); ?>
               <?php while($row = $yamaha_Products->fetch_assoc()){ ?>
                 <div class="product text-center col-lg-3 col-3 col-md-4 col-sm-12">
-                  <img class="img-fluid mb-3" src="assets/image/<?php echo $row['product_image']; ?>"/>
+                  <img class="img-fluid mb-3" src="uploads/<?php echo $row['product_image']; ?>"/>
                   <div class="star">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
@@ -119,7 +119,7 @@ include('layouts/header.php');
               <?php include('server/get_ducati.php'); ?>
               <?php while($row = $ducati_Products->fetch_assoc()){ ?>
                 <div class="product text-center col-lg-3 col-3 col-md-4 col-sm-12">
-                  <img class="img-fluid mb-3" src="assets/image/<?php echo $row['product_image']; ?>"/>
+                  <img class="img-fluid mb-3" src="uploads/<?php echo $row['product_image']; ?>"/>
                   <div class="star">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
@@ -148,7 +148,7 @@ include('layouts/header.php');
               <?php include('server/get_honda.php'); ?>
               <?php while($row = $honda_Products->fetch_assoc()){ ?>
                 <div class="product text-center col-lg-3 col-3 col-md-4 col-sm-12">
-                  <img class="img-fluid mb-3" src="assets/image/<?php echo $row['product_image']; ?>"/>
+                  <img class="img-fluid mb-3" src="uploads/<?php echo $row['product_image']; ?>"/>
                   <div class="star">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
@@ -176,7 +176,7 @@ include('layouts/header.php');
               <?php include('server/get_aprilia.php'); ?>
               <?php while($row = $aprilia_Products->fetch_assoc()){ ?>
                 <div class="product text-center col-lg-3 col-3 col-md-4 col-sm-12">
-                  <img class="img-fluid mb-3" src="assets/image/<?php echo $row['product_image']; ?>"/>
+                  <img class="img-fluid mb-3" src="uploads/<?php echo $row['product_image']; ?>"/>
                   <div class="star">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>

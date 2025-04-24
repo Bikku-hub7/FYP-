@@ -25,13 +25,16 @@ include('layouts/header.php');
 
                 <?php if(isset($_SESSION['total']) && $_SESSION['total'] !=0) {?>
                     <p>Total Payment: $<?php echo $_SESSION['total']; ?></p>
-                    <input class="btn btn-primary" type="submit" value="Pay Now">
-
-
+                    <form action="checkout.php" method="GET">
+                        <input type="hidden" name="total" value="<?php echo $_SESSION['total']; ?>">
+                        <input class="btn btn-primary" type="submit" value="Pay Now">
+                    </form>
                 <?php } else if(isset($_POST['order_status']) && $_POST['order_status'] == "Pending"){?>
                     <p>Total Payment: $ <?php echo $_POST['order_total_price']; ?></p>
-                    <input class="btn btn-primary" type="submit" value="Pay Now">
-
+                    <form action="checkout.php" method="GET">
+                        <input type="hidden" name="total" value="<?php echo $_POST['order_total_price']; ?>">
+                        <input class="btn btn-primary" type="submit" value="Pay Now">
+                    </form>
                 <?php } else { ?>
 
                     <p style="color:red;">You don't have an order. Your cart is empty</p>

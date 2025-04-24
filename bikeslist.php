@@ -121,16 +121,10 @@ include('layouts/header.php');
                     <p>Check out our bikes by brand</p>
                 </div>
 
-                <div class="container text-center">
-                    <h3>YAMAHA</h3>
-                    <hr class="mx-auto">
-                    <p>Explore our Yamaha bike collection</p>
-                </div>
-
                 <div class="row">
                     <?php while($row = $products->fetch_assoc()) { ?>
                         <div onclick="window.location.href='single_product.php';" class="product text-center col-lg-3 col-md-4 col-sm-6">
-                            <img class="img-fluid mb-3" src="assets/image/<?php echo $row['product_image']; ?>" />
+                            <img class="img-fluid mb-3" src="uploads/<?php echo $row['product_image']; ?>" alt="<?php echo $row['product_name']; ?>" />
                             <div class="star">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>

@@ -21,7 +21,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Handle file upload
     $product_image = '';
-    $upload_dir = 'assets/images/';
+    $upload_dir = '../uploads/'; // Changed to root uploads directory
+    
+    // Create uploads directory if it doesn't exist
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
     
     if(isset($_FILES['product_image']) && $_FILES['product_image']['error'] == 0) {
         $allowed = array('jpg', 'jpeg', 'png', 'gif');
@@ -182,4 +187,3 @@ include "includes/footer.php";
 // Close connection
 $conn->close();
 ?>
-

@@ -15,17 +15,17 @@ if (!isset($_POST['submit']) || empty($_SESSION['cart'])) {
     exit();
 }
 
-// Collect and sanitize data
-$amount = floatval($_POST['inputAmount4'] ?? 0) * 100; // Convert to paisa
+// Sanitize and fetch data
+$amount = floatval($_POST['inputAmount4'] ?? 0);
 $purchase_order_id = htmlspecialchars($_POST['inputPurchasedOrderId4'] ?? '');
-$purchase_order_name = htmlspecialchars($_POST['inputPurchasedOrderName'] ?? '');
+$purchase_order_name = htmlspecialchars($_POST['inputPurchasedOrderName4'] ?? '');
 $name = htmlspecialchars($_POST['inputName'] ?? '');
 $email = filter_var($_POST['inputEmail'] ?? '', FILTER_SANITIZE_EMAIL);
 $phone = preg_replace('/[^0-9]/', '', $_POST['inputPhone'] ?? '');
 $city = htmlspecialchars($_POST['inputCity'] ?? '');
 $address = htmlspecialchars($_POST['inputAddress'] ?? '');
 
-// Store checkout data in session for later use
+// Save to session
 $_SESSION['checkout_data'] = [
     'name' => $name,
     'email' => $email,
@@ -36,28 +36,14 @@ $_SESSION['checkout_data'] = [
     'total' => $amount / 100
 ];
 
-// Validate inputs
+// Input validation
 $errors = [];
 
-if ($amount <= 100) { // Minimum 1 rupee (100 paisa)
-    $errors[] = "Amount must be at least Rs. 1";
-}
-
-if (empty($purchase_order_id)) {
-    $errors[] = "Order ID is required";
-}
-
-if (empty(trim($name))) {
-    $errors[] = "Name is required";
-}
-
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = "Valid email is required";
-}
-
-if (strlen($phone) != 10 || !is_numeric($phone)) {
-    $errors[] = "Valid 10-digit phone number is required";
-}
+if ($amount <= 100) $errors[] = "Amount must be at least Rs. 1";
+if (empty($purchase_order_id)) $errors[] = "Order ID is required";
+if (empty(trim($name))) $errors[] = "Name is required";
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required";
+if (strlen($phone) != 10 || !is_numeric($phone)) $errors[] = "Valid 10-digit phone number is required";
 
 if (!empty($errors)) {
     $_SESSION['validate_msg'] = '<script>
@@ -72,10 +58,9 @@ if (!empty($errors)) {
     exit();
 }
 
-// Prepare Khalti payment request
+// Prepare Khalti request
 $postFields = [
-    "return_url" => (isset($_SERVER['HTTPS']) ? "https://" : "http://") . 
-                  $_SERVER['HTTP_HOST'] . "/server/khalti-ePayment-gateway-main/payment-response.php",
+    "return_url" => (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . "/server/khalti-ePayment-gateway-main/payment-response.php",
     "website_url" => (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . "/",
     "amount" => $amount,
     "purchase_order_id" => $purchase_order_id,
@@ -87,7 +72,7 @@ $postFields = [
     ]
 ];
 
-// Initiate cURL request
+// cURL to Khalti
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => 'https://a.khalti.com/api/v2/epayment/initiate/',
@@ -95,11 +80,11 @@ curl_setopt_array($ch, [
     CURLOPT_POST => true,
     CURLOPT_POSTFIELDS => json_encode($postFields),
     CURLOPT_HTTPHEADER => [
-        'Authorization: Key 8e10987a17a747129ad50756a5e43de5', // Replace with your actual key
+        'Authorization: Key 8e10987a17a747129ad50756a5e43de5', 
         'Content-Type: application/json',
     ],
-    CURLOPT_TIMEOUT => 15, // 15 second timeout
-    CURLOPT_SSL_VERIFYPEER => true // Always verify SSL certificate
+    CURLOPT_TIMEOUT => 15,
+    CURLOPT_SSL_VERIFYPEER => true
 ]);
 
 $response = curl_exec($ch);
@@ -107,7 +92,6 @@ $curlError = curl_error($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-// Handle cURL errors
 if ($curlError) {
     error_log("Khalti Payment Error: " . $curlError);
     $_SESSION['validate_msg'] = '<script>
@@ -123,7 +107,6 @@ if ($curlError) {
     exit();
 }
 
-// Handle HTTP errors
 if ($httpCode !== 200) {
     error_log("Khalti Payment HTTP Error: " . $httpCode . " - " . $response);
     $_SESSION['validate_msg'] = '<script>
@@ -139,11 +122,9 @@ if ($httpCode !== 200) {
     exit();
 }
 
-// Process response
 $responseData = json_decode($response, true);
 
 if (isset($responseData['payment_url'])) {
-    // Store transaction reference in session
     $_SESSION['transaction_reference'] = $responseData['pidx'] ?? null;
     header("Location: " . $responseData['payment_url']);
     exit();

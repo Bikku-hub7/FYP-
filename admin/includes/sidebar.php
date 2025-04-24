@@ -22,6 +22,11 @@
                 </a>
             </li>
             <li>
+                <a href="staff.php" class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'staff.php' || basename($_SERVER['PHP_SELF']) == 'add-staff.php' || basename($_SERVER['PHP_SELF']) == 'edit-staff.php') ? 'active' : ''; ?>">
+                    <i class="fas fa-user-tie me-2"></i> Staff
+                </a>
+            </li>
+            <li>
                 <a href="reports.php" class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'reports.php') ? 'active' : ''; ?>">
                     <i class="fas fa-chart-bar me-2"></i> Reports
                 </a>

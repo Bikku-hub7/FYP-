@@ -57,7 +57,6 @@ include "includes/sidebar.php";
 <div class="col-md-9 col-lg-10 main-content">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Dashboard</h1>
-       
     </div>
 
     <!-- Dashboard Cards -->
@@ -131,17 +130,21 @@ include "includes/sidebar.php";
         </div>
     </div>
 
-     
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Sales Overview</h6>
-    </div>
-    <div class="card-body">
-        <div class="chart-area" style="position: relative; height: 400px; width: 100%;">
-            <canvas id="salesChart"></canvas>
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-xl-7 col-lg-12 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Sales Overview</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- Recent Orders -->
     <div class="card shadow mb-4">
@@ -227,4 +230,3 @@ include "includes/footer.php";
 // Close connection
 $conn->close();
 ?>
-

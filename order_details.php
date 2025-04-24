@@ -64,7 +64,7 @@ include('layouts/header.php');
               <tr>
                 <td>
                   <div class="product-info">
-                    <img src="assets/image/<?php echo $row['product_image']; ?>"/>
+                    <img src="uploads/<?php echo $row['product_image']; ?>"/>
                     <div>
                      <p classs="mt-3"><?php echo $row['product_name']; ?></p>
                     </div>

@@ -18,10 +18,15 @@ if(isset($_POST['register'])){
     //if password and confirm password does not match
   if($password !== $confirmpassword){
         header('location: register.php?error=Password does not match');
-  
+        exit();
     //if password is less than 8 characters
   }else if(strlen($password) < 8){
         header('location: register.php?error=Password must be at least 8 characters');
+        exit();
+    //if password does not meet criteria: at least one symbol, one number, one capital, one small letter and no spaces
+    } else if(!preg_match('/^(?=\S+$)(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/', $password)){
+        header('location: register.php?error=Password must include one symbol, one number, one capital letter, one small letter and have no spaces');
+        exit();
   } else {
     //check wether the email already exists
     $stmt1 = $conn->prepare("SELECT count(*) FROM users WHERE user_email = ?");

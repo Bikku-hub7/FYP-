@@ -155,23 +155,25 @@ include "includes/sidebar.php";
                         <div class="col-md-8">
                             <?php 
                             if($order['user_id'] > 0) {
-                                $user_sql = "SELECT user_name, user_email FROM users WHERE user_id = " . $order['user_id'];
+                                $user_sql = "SELECT user_name, user_email, user_phone FROM users WHERE user_id = " . $order['user_id'];
                                 $user_result = $conn->query($user_sql);
                                 if($user_result->num_rows > 0) {
                                     $user = $user_result->fetch_assoc();
                                     echo $user['user_name'] . " (" . $user['user_email'] . ")";
                                 } else {
                                     echo "User #" . $order['user_id'];
+                                    $user = null;
                                 }
                             } else {
                                 echo "Guest";
+                                $user = null;
                             }
                             ?>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4 fw-bold">Phone:</div>
-                        <div class="col-md-8"><?php echo $order['user_phone']; ?></div>
+                        <div class="col-md-8"><?php echo $user['user_phone'] ?? 'N/A'; ?></div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4 fw-bold">City:</div>
@@ -212,7 +214,7 @@ include "includes/sidebar.php";
                         <tr>
                             <td><?php echo $item['product_name']; ?></td>
                             <td>
-                                <img src="assets/images/<?php echo $item['product_image']; ?>" alt="<?php echo $item['product_name']; ?>" width="50">
+                                <img src="../uploads/<?php echo $item['product_image']; ?>" alt="<?php echo $item['product_name']; ?>" width="50">
                             </td>
                             <td>$<?php echo number_format($item['product_price'], 2); ?></td>
                             <td><?php echo $item['product_quantity']; ?></td>
@@ -269,4 +271,3 @@ include "includes/footer.php";
 // Close connection
 $conn->close();
 ?>
-

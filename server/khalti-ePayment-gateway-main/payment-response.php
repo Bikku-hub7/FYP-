@@ -13,7 +13,7 @@ if (isset($_GET['pidx'])) {
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => json_encode(['pidx' => $pidx]),
         CURLOPT_HTTPHEADER => [
-            'Authorization: Key 8e10987a17a747129ad50756a5e43de5', // Replace with your actual key
+            'Authorization: Key 8e10987a17a747129ad50756a5e43de5',  
             'Content-Type: application/json',
         ],
     ]);

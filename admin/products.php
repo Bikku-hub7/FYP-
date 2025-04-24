@@ -39,28 +39,78 @@ $start = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $search_condition = '';
 if(!empty($search)) {
-    $search_condition = " WHERE product_name LIKE '%$search%' OR product_category LIKE '%$search%'";
-}
-
-// Category filter
-$category_filter = isset($_GET['category']) ? $_GET['category'] : '';
-if(!empty($category_filter)) {
-    if(empty($search_condition)) {
-        $search_condition = " WHERE product_category = '$category_filter'";
+    // Use prepared statement for search to prevent SQL injection
+    $search_param = "%$search%";
+    $search_condition = " WHERE (product_name LIKE ? OR product_category LIKE ? OR product_description LIKE ?)";
+    
+    // Category filter
+    $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
+    if(!empty($category_filter)) {
+        $search_condition .= " AND product_category = ?";
+    }
+    
+    // Get total records
+    $count_sql = "SELECT COUNT(*) as total FROM products" . $search_condition;
+    $count_stmt = $conn->prepare($count_sql);
+    
+    if(!empty($category_filter)) {
+        $count_stmt->bind_param("ssss", $search_param, $search_param, $search_param, $category_filter);
     } else {
-        $search_condition .= " AND product_category = '$category_filter'";
+        $count_stmt->bind_param("sss", $search_param, $search_param, $search_param);
+    }
+    
+    $count_stmt->execute();
+    $count_result = $count_stmt->get_result();
+    $total_records = $count_result->fetch_assoc()['total'];
+    $total_pages = ceil($total_records / $limit);
+    $count_stmt->close();
+    
+    // Get products with pagination
+    $sql = "SELECT * FROM products" . $search_condition . " ORDER BY product_id DESC LIMIT ?, ?";
+    $stmt = $conn->prepare($sql);
+    
+    if(!empty($category_filter)) {
+        $stmt->bind_param("ssssii", $search_param, $search_param, $search_param, $category_filter, $start, $limit);
+    } else {
+        $stmt->bind_param("ssii", $search_param, $search_param, $search_param, $start, $limit);
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    // Only category filter
+    if(!empty($category_filter)) {
+        $search_condition = " WHERE product_category = ?";
+        
+        // Get total records
+        $count_sql = "SELECT COUNT(*) as total FROM products" . $search_condition;
+        $count_stmt = $conn->prepare($count_sql);
+        $count_stmt->bind_param("s", $category_filter);
+        $count_stmt->execute();
+        $count_result = $count_stmt->get_result();
+        $total_records = $count_result->fetch_assoc()['total'];
+        $total_pages = ceil($total_records / $limit);
+        $count_stmt->close();
+        
+        // Get products with pagination
+        $sql = "SELECT * FROM products" . $search_condition . " ORDER BY product_id DESC LIMIT ?, ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sii", $category_filter, $start, $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        // No search or category filter
+        // Get total records
+        $count_sql = "SELECT COUNT(*) as total FROM products";
+        $count_result = $conn->query($count_sql);
+        $total_records = $count_result->fetch_assoc()['total'];
+        $total_pages = ceil($total_records / $limit);
+        
+        // Get products with pagination
+        $sql = "SELECT * FROM products ORDER BY product_id DESC LIMIT $start, $limit";
+        $result = $conn->query($sql);
     }
 }
-
-// Get total records
-$count_sql = "SELECT COUNT(*) as total FROM products" . $search_condition;
-$count_result = $conn->query($count_sql);
-$total_records = $count_result->fetch_assoc()['total'];
-$total_pages = ceil($total_records / $limit);
-
-// Get products with pagination
-$sql = "SELECT * FROM products" . $search_condition . " ORDER BY product_id DESC LIMIT $start, $limit";
-$result = $conn->query($sql);
 
 // Get all categories for filter
 $categories_sql = "SELECT DISTINCT product_category FROM products ORDER BY product_category";
@@ -134,7 +184,7 @@ include "includes/sidebar.php";
                             <tr>
                                 <td><?php echo $row['product_id']; ?></td>
                                 <td>
-                                    <img src="assets/images/<?php echo $row['product_image']; ?>" alt="<?php echo $row['product_name']; ?>" width="50">
+                                    <img src="../uploads/<?php echo $row['product_image']; ?>" alt="<?php echo $row['product_name']; ?>" width="50">
                                 </td>
                                 <td><?php echo $row['product_name']; ?></td>
                                 <td><?php echo $row['product_category']; ?></td>
@@ -198,7 +248,6 @@ include "includes/sidebar.php";
                     <?php endfor; ?>
                     <li class="page-item <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
                         <a class="page-link" href="?page=<?php echo $page+1; ?><?php echo (!empty($search)) ? '&search='.$search : ''; ?><?php echo (!empty($category_filter)) ? '&category='.$category_filter : ''; ?>" aria-label="Next">
-                              ? '&category='.$category_filter : ''; ?>" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
@@ -216,4 +265,3 @@ include "includes/footer.php";
 // Close connection
 $conn->close();
 ?>
-

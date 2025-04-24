@@ -44,7 +44,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Handle file upload
     $product_image = $product['product_image']; // Keep existing image by default
-    $upload_dir = 'assets/images/';
+    $upload_dir = '../uploads/'; // Changed to root uploads directory
+    
+    // Create uploads directory if it doesn't exist
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
     
     if(isset($_FILES['product_image']) && $_FILES['product_image']['error'] == 0) {
         $allowed = array('jpg', 'jpeg', 'png', 'gif');
@@ -192,7 +197,7 @@ include "includes/sidebar.php";
                 <div class="mb-3">
                     <label for="product_image" class="form-label">Product Image</label>
                     <div class="mb-2">
-                        <img src="assets/images/<?php echo $product['product_image']; ?>" alt="<?php echo $product['product_name']; ?>" width="100" class="img-thumbnail">
+                        <img src="../uploads/<?php echo $product['product_image']; ?>" alt="<?php echo $product['product_name']; ?>" width="100" class="img-thumbnail">
                     </div>
                     <input class="form-control" type="file" id="product_image" name="product_image">
                     <small class="text-muted">Leave empty to keep current image</small>
@@ -224,4 +229,3 @@ include "includes/footer.php";
 // Close connection
 $conn->close();
 ?>
-
