@@ -71,7 +71,7 @@ include('layouts/header.php');
                         <input type="Submit" class="btn" id="login-btn" name="login_btn" value="Login"/>
                     </div>
                     <div class="form-group">
-                      <a href="forgot_password.php" class="btn">Forgot Password?</a>
+                      <a href="otp/forgot_password.php" class="btn">Forgot Password?</a>
                     </div>
                     <div class = "form-group">
                        <a id="register-url" href="register.php" class="btn">Don't have an account? Register</a>

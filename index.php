@@ -192,7 +192,90 @@ include('layouts/header.php');
               </div>
           </section>    
 
+<!-- Chat Support Widget -->
+<div id="chat-support" style="position: fixed; bottom: 20px; right: 20px; font-family: sans-serif;">
+    <div id="chat-toggle" style="background-color: rgb(255,0,0); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+         <i class="fas fa-comments fa-2x text-white"></i>
+    </div>
+    <div id="chat-box" style="display: none; background: #fff; border: 1px solid red; border-radius: 15px; width: 300px; height: 400px; margin-top: 10px; flex-direction: column;">
+         <!-- Chat Header -->
+         <div id="chat-header" style="background-color: rgb(242,24,24); color: #fff; padding: 10px; font-weight: bold;">
+              Bikku Bike Rental
+         </div>
+         <!-- Chat Messages Area -->
+         <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto;">
+              <p>Hello! How can we assist you today?</p>
+              <div id="chat-options">
+                  <button class="chat-option" data-response="We offer a variety of bikes from scooters to sport bikes. All rentals come with helmets.">🏍 Rental Info</button>
+                  <button class="chat-option" data-response="Prices start at NPR 500/day. Discounts available for longer rentals.">💰 Pricing</button>
+                  <button class="chat-option" data-response="You can reach us at 9800000000 or email support@bikkubike.com.">📞 Contact Support</button>
+              </div>
+         </div>
+         <!-- Chat Input Area -->
+         <div id="chat-input-area" style="padding: 10px;">
+              <form id="chat-form" action="server/store_chat.php" method="post">
+                   <input type="text" name="chat_message" placeholder="We will response as soon as possible..." style="width: 100%; padding: 5px;" />
+              </form>
+         </div>
+    </div>
+</div>
+<script>
+    document.getElementById('chat-toggle').addEventListener('click', function() {
+       var chatBox = document.getElementById('chat-box');
+       var display = window.getComputedStyle(chatBox).display;
+       chatBox.style.display = (display === 'none') ? 'flex' : 'none';
+    });
 
+    // Updated: Hide sibling options and display response for the clicked button.
+    document.querySelectorAll('.chat-option').forEach(function(button) {
+      button.addEventListener('click', function() {
+         var response = this.getAttribute('data-response');
+         var optionsContainer = document.getElementById('chat-options');
+         // Hide all other options, keep the clicked one.
+         Array.from(optionsContainer.children).forEach(function(btn) {
+             if (btn !== button) {
+                 btn.style.display = 'none';
+             }
+         });
+         // Append response after the clicked button if not already added.
+         if (!button.nextElementSibling || button.nextElementSibling.tagName.toLowerCase() !== 'p') {
+             var responseElem = document.createElement('p');
+             responseElem.textContent = response;
+             button.parentNode.appendChild(responseElem);
+         }
+      });
+    });
+
+    // Add event listener for chat form submission to store the input via AJAX
+    document.getElementById('chat-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const chatMessage = this.chat_message.value;
+        if(chatMessage.trim()){
+           fetch('server/store_chat.php', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+             body: 'chat_message=' + encodeURIComponent(chatMessage)
+           })
+           .then(response => response.text())
+           .then(data => {
+              console.log(data);
+              this.chat_message.value = '';
+           })
+           .catch(console.error);
+        }
+    });
+</script>
+
+<!-- Added styles for chat UI -->
+<style>
+    .chat-option {
+        background: transparent;
+        color: rgba(0, 0, 0, 0.7);
+        border-radius: 20px;
+        padding: 5px 10px;
+        margin: 5px;
+    }
+</style>
 <?php 
 
 include('layouts/footer.php');

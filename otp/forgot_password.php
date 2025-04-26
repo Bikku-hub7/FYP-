@@ -1,14 +1,14 @@
 <?php
 session_start();
-include('server/connection.php');
+include('../server/connection.php');
 
 // Include PHPMailer classes
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/src/SMTP.php';
-require 'PHPMailer-master/src/Exception.php';
+require '../PHPMailer-master/src/PHPMailer.php';
+require '../PHPMailer-master/src/SMTP.php';
+require '../PHPMailer-master/src/Exception.php';
 
 if (isset($_POST['submit_email'])) {
     $email = $_POST['email'];
@@ -32,12 +32,12 @@ if (isset($_POST['submit_email'])) {
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'your_email@gmail.com';       // replace with your Gmail
-            $mail->Password = 'your_app_password';          // replace with Gmail App Password
+            $mail->Username = 'np03cs4s230163@heraldcollege.edu.np';       // replace with your Gmail
+            $mail->Password = 'molz jglm dojv bnsw';          // replace with Gmail App Password
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 
-            $mail->setFrom('your_email@gmail.com', 'Your App Name');
+            $mail->setFrom('np03cs4s230163@heraldcollege.edu.np', 'bike rental');
             $mail->addAddress($email);
             $mail->Subject = 'Your OTP Code';
             $mail->Body = "Your OTP is $otp. It will expire in 5 minutes.";
@@ -54,7 +54,7 @@ if (isset($_POST['submit_email'])) {
 }
 ?>
 
-<?php include('layouts/header.php'); ?>
+<?php include('../layouts/header.php'); ?>
 
 <section class="my-5 py-5">
   <div class="container text-center mt-3 pt-5">
@@ -63,7 +63,7 @@ if (isset($_POST['submit_email'])) {
     <p class="text-danger"><?php if (isset($error)) echo $error; ?></p>
   </div>
   <div class="mx-auto container">
-    <form method="POST" action="forgot_password.php">
+    <form method="POST" action=" forgot_password.php">
       <div class="form-group">
         <label>Enter your email</label>
         <input type="email" class="form-control" name="email" required />
@@ -73,4 +73,4 @@ if (isset($_POST['submit_email'])) {
   </div>
 </section>
 
-<?php include('layouts/footer.php'); ?>
+<?php include('../layouts/footer.php'); ?>

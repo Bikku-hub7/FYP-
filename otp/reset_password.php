@@ -1,9 +1,9 @@
 <?php
 session_start();
-include('server/connection.php');
+include('../server/connection.php');
 
 if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
-    header("Location: forgot_password.php");
+    header("Location: ../otp/forgot_password.php");
     exit;
 }
 

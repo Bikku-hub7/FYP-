@@ -83,11 +83,15 @@ include('layouts/header.php');
                     </div>
                     <div class = "form-group">
                         <label>Email</label>
-                        <input type="text" class="form-control" id="register-email" name="email" placeholder="Email" required/>
+                        <input type="email" class="form-control" id="register-email" name="email" placeholder="Email" required 
+                               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" 
+                               title="Enter a valid email address"/>
                     </div>
                     <div class = "form-group">
                         <label>Password</label>
-                        <input type="password" class="form-control" id="register-password" name="password" placeholder="Password" required/>
+                        <input type="password" class="form-control" id="register-password" name="password" placeholder="Password" required 
+                               pattern="^(?=\S+$)(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$" 
+                               title="Password must be at least 8 characters long, include one symbol, one number, one capital letter, one small letter and have no spaces"/>
                     </div>
                     <div class = "form-group">
                         <label>Confirm Password</label>

@@ -27,6 +27,11 @@
                 </a>
             </li>
             <li>
+                <a href="chat.php" class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'chat.php') ? 'active' : ''; ?>">
+                    <i class="fas fa-message me-2"></i> ChatMessages
+                </a>
+            </li>
+            <li>
                 <a href="reports.php" class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'reports.php') ? 'active' : ''; ?>">
                     <i class="fas fa-chart-bar me-2"></i> Reports
                 </a>
