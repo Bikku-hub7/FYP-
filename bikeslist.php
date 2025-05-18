@@ -99,9 +99,9 @@ include('layouts/header.php');
                         <p><strong>Price Range</strong></p>
                         <input type="range" class="form-range w-100" name="price" min="1" max="1000" id="priceRange" oninput="updatePrice()">
                         <div class="d-flex justify-content-between">
-                            <span>$<span id="minPrice">1</span></span>
-                            <span>$<span id="currentPrice">500</span></span>
-                            <span>$<span id="maxPrice">1000</span></span>
+                            <span>NPR-<span id="minPrice">1</span></span>
+                            <span>NPR-<span id="currentPrice">500</span></span>
+                            <span>NPR-<span id="maxPrice">1000</span></span>
                         </div>
                     </div>
 
@@ -133,7 +133,7 @@ include('layouts/header.php');
                                 <i class="fas fa-star"></i>
                             </div>
                             <h5 class="p-name"><?php echo $row['product_name']; ?></h5>
-                            <h4 class="p-price">$<?php echo $row['product_price']; ?></h4>
+                            <h4 class="p-price">NPR-<?php echo $row['product_price']; ?></h4>
                             <a class="btn shop-buy-btn" href="single_product.php?product_id=<?php echo $row['product_id']; ?>">Buy Now</a>
                         </div>
                     <?php } ?>

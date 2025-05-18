@@ -45,6 +45,45 @@ if(isset($_POST['add_product'])) {
                 
                 if($stmt->execute()) {
                     $successMsg = "Product added successfully!";
+                    
+                    // Send email notification to all users
+                    require_once '../PHPMailer-master/src/PHPMailer.php';
+                    require_once '../PHPMailer-master/src/SMTP.php';
+                    require_once '../PHPMailer-master/src/Exception.php';
+                    
+                    $mail = new PHPMailer\PHPMailer\PHPMailer();
+                    $mail->isSMTP();
+                    $mail->Host       = 'smtp.gmail.com';
+                    $mail->SMTPAuth   = true;
+                    $mail->Username   = 'np03cs4s230163@heraldcollege.edu.np';
+                    $mail->Password   = 'molz jglm dojv bnsw';
+                    $mail->SMTPSecure = 'tls';
+                    $mail->Port       = 587;
+                    
+                    $mail->setFrom('np03cs4s230163@heraldcollege.edu.np', 'Bikku Rental');
+                    $mail->Subject = 'New Product Added';
+                    $mail->isHTML(true);
+                    $mail->Body = "
+                        <h2>New Product Added!</h2>
+                        <p><strong>Name:</strong> {$name}</p>
+                        <p><strong>Category:</strong> {$category}</p>
+                        <p><strong>Description:</strong> {$description}</p>
+                        <p><strong>Price:</strong> NPR {$price}</p>
+                     
+                    ";
+                    
+                    // Fetch all user emails from the database
+                    $user_sql = "SELECT user_email FROM users";
+                    $result = $conn->query($user_sql);
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            $mail->addBCC($row['user_email']); // add each user as BCC
+                        }
+                    }
+                    
+                    if (!$mail->send()) {
+                        error_log("Mailer Error: " . $mail->ErrorInfo);
+                    }
                 } else {
                     $errorMsg = "Error adding product: " . $conn->error;
                 }
@@ -142,8 +181,16 @@ if(isset($_POST['add_product'])) {
                                 <div class="col-md-6 mb-3">
                                     <label for="price" class="form-label">Price</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
-                                        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                                        <span class="input-group-text">NPR</span>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="price" 
+                                            name="price"  
+                                            min="1" 
+                                            required
+                                            oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if(this.value < 1) this.value='';"
+                                        >
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">

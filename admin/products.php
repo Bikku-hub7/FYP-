@@ -30,6 +30,35 @@ if(isset($_GET['delete']) && !empty($_GET['delete'])) {
     $stmt->close();
 }
 
+// Handle availability toggle
+if(isset($_GET['toggle_availability']) && !empty($_GET['toggle_availability'])) {
+    $product_id = $_GET['toggle_availability'];
+    
+    // Get current availability status
+    $check_sql = "SELECT availability FROM products WHERE product_id = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("i", $product_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+    $current_status = $check_result->fetch_assoc()['availability'];
+    
+    // Toggle availability
+    $new_status = $current_status ? 0 : 1;
+    $update_sql = "UPDATE products SET availability = ? WHERE product_id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param("ii", $new_status, $product_id);
+    
+    if($update_stmt->execute()) {
+        $status_message = "Product availability updated successfully!";
+        $status_type = "success";
+    } else {
+        $status_message = "Error updating availability: " . $conn->error;
+        $status_type = "danger";
+    }
+    
+    $update_stmt->close();
+}
+
 // Pagination
 $limit = 10;
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
@@ -175,6 +204,7 @@ include "includes/sidebar.php";
                             <th>Category</th>
                             <th>Price</th>
                             <th>Color</th>
+                            <th>Availability</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -190,6 +220,11 @@ include "includes/sidebar.php";
                                 <td><?php echo $row['product_category']; ?></td>
                                 <td>$<?php echo number_format($row['product_price'], 2); ?></td>
                                 <td><?php echo $row['product_color']; ?></td>
+                                <td>
+                                    <a href="?toggle_availability=<?php echo $row['product_id']; ?>" class="btn btn-sm <?php echo $row['availability'] ? 'btn-success' : 'btn-secondary'; ?>">
+                                        <?php echo $row['availability'] ? 'Available' : 'Unavailable'; ?>
+                                    </a>
+                                </td>
                                 <td>
                                     <div class="btn-group">
                                         <a href="edit-product.php?id=<?php echo $row['product_id']; ?>" class="btn btn-sm btn-primary">
@@ -223,7 +258,7 @@ include "includes/sidebar.php";
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center">No products found</td>
+                                <td colspan="8" class="text-center">No products found</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

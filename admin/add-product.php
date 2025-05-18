@@ -11,62 +11,108 @@ if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true
 require_once "config/db.php";
 
 // Process form submission
-if($_SERVER["REQUEST_METHOD"] == "POST") {
+if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_product'])) {
     $product_name = $_POST['product_name'];
     $product_category = $_POST['product_category'];
     $product_description = $_POST['product_description'];
     $product_price = $_POST['product_price'];
     $product_color = $_POST['product_color'];
     $product_special_offer = isset($_POST['product_special_offer']) ? $_POST['product_special_offer'] : 0;
-    
-    // Handle file upload
-    $product_image = '';
-    $upload_dir = '../uploads/'; // Changed to root uploads directory
-    
-    // Create uploads directory if it doesn't exist
-    if (!file_exists($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
-    }
-    
-    if(isset($_FILES['product_image']) && $_FILES['product_image']['error'] == 0) {
-        $allowed = array('jpg', 'jpeg', 'png', 'gif');
-        $filename = $_FILES['product_image']['name'];
-        $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+
+    // Prevent negative price on server side
+    if ($product_price < 0) {
+        $error = "Product price cannot be negative.";
+    } else {
+        // Handle file upload
+        $product_image = '';
+        $upload_dir = '../uploads/'; // Changed to root uploads directory
         
-        if(in_array(strtolower($file_ext), $allowed)) {
-            $new_filename = uniqid() . '.' . $file_ext;
-            if(move_uploaded_file($_FILES['product_image']['tmp_name'], $upload_dir . $new_filename)) {
-                $product_image = $new_filename;
+        // Create uploads directory if it doesn't exist
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+        
+        if(isset($_FILES['product_image']) && $_FILES['product_image']['error'] == 0) {
+            $allowed = array('jpg', 'jpeg', 'png', 'gif');
+            $filename = $_FILES['product_image']['name'];
+            $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            
+            if(in_array(strtolower($file_ext), $allowed)) {
+                $new_filename = uniqid() . '.' . $file_ext;
+                if(move_uploaded_file($_FILES['product_image']['tmp_name'], $upload_dir . $new_filename)) {
+                    $product_image = $new_filename;
+                } else {
+                    $error = "Failed to upload image";
+                }
             } else {
-                $error = "Failed to upload image";
+                $error = "Invalid file type. Only JPG, JPEG, PNG and GIF are allowed.";
             }
         } else {
-            $error = "Invalid file type. Only JPG, JPEG, PNG and GIF are allowed.";
-        }
-    } else {
-        $product_image = 'placeholder.jpg'; // Default image
-    }
-    
-    // Use the same image for all image fields for simplicity
-    $product_image2 = $product_image;
-    $product_image3 = $product_image;
-    $product_image4 = $product_image;
-    
-    if(!isset($error)) {
-        // Insert product into database
-        $sql = "INSERT INTO products (product_name, product_category, product_description, product_image, product_image2, product_image3, product_image4, product_price, product_special_offer, product_color) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssssdis", $product_name, $product_category, $product_description, $product_image, $product_image2, $product_image3, $product_image4, $product_price, $product_special_offer, $product_color);
-        
-        if($stmt->execute()) {
-            $success = "Product added successfully!";
-        } else {
-            $error = "Error: " . $stmt->error;
+            $product_image = 'placeholder.jpg'; // Default image
         }
         
-        $stmt->close();
+        // Use the same image for all image fields for simplicity
+        $product_image2 = $product_image;
+        $product_image3 = $product_image;
+        $product_image4 = $product_image;
+        
+        if(!isset($error)) {
+            // Insert product into database
+            $sql = "INSERT INTO products (product_name, product_category, product_description, product_image, product_image2, product_image3, product_image4, product_price, product_special_offer, product_color) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sssssssdis", $product_name, $product_category, $product_description, $product_image, $product_image2, $product_image3, $product_image4, $product_price, $product_special_offer, $product_color);
+            
+            if($stmt->execute()) {
+                $success = "Product added successfully!";
+                
+                // Send email notification to all users
+                require_once '../PHPMailer-master/src/PHPMailer.php';
+                require_once '../PHPMailer-master/src/SMTP.php';
+                require_once '../PHPMailer-master/src/Exception.php';
+                
+                $mail = new PHPMailer\PHPMailer\PHPMailer();
+                $mail->isSMTP();
+                $mail->Host       = 'smtp.gmail.com';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = 'np03cs4s230163@heraldcollege.edu.np'; // your Gmail
+                $mail->Password   = 'molz jglm dojv bnsw'; // Gmail App Password
+                $mail->SMTPSecure = 'tls';
+                $mail->Port       = 587;
+                
+                $mail->setFrom('np03cs4s230163@heraldcollege.edu.np', 'Bikku Rental');
+                $mail->Subject = 'New Product Added';
+                $mail->isHTML(true);
+                $mail->Body = "
+                    <h2>New Product Added!</h2>
+                    <p><strong>Name:</strong> {$product_name}</p>
+                    <p><strong>Category:</strong> {$product_category}</p>
+                    <p><strong>Description:</strong> {$product_description}</p>
+                    <p><strong>Price:</strong> NPR {$product_price}</p>
+                    <p><strong>Color:</strong> {$product_color}</p>
+                    <p><strong>Special Offer:</strong> {$product_special_offer}%</p>
+ 
+                ";
+                
+                // Fetch all user emails from the database
+                $user_sql = "SELECT user_email FROM users";
+                $result = $conn->query($user_sql);
+                if ($result && $result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $mail->addBCC($row['user_email']); // add each user as BCC
+                    }
+                }
+                
+                if (!$mail->send()) {
+                    error_log("Mailer Error: " . $mail->ErrorInfo);
+                }
+            } else {
+                $error = "Error: " . $stmt->error;
+            }
+            
+            $stmt->close();
+        }
     }
 }
 
@@ -141,8 +187,8 @@ include "includes/sidebar.php";
                     <div class="col-md-4">
                         <label for="product_price" class="form-label">Price</label>
                         <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" id="product_price" name="product_price" step="0.01" required>
+                            <span class="input-group-text">NPR</span>
+                            <input type="number" class="form-control" id="product_price" name="product_price" step="0.01" min="0" required>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -163,7 +209,7 @@ include "includes/sidebar.php";
                 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
-                    <button type="submit" class="btn btn-primary">Add Product</button>
+                    <button type="submit" class="btn btn-primary" name="add_product">Add Product</button>
                 </div>
             </form>
         </div>

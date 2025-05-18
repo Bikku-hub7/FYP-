@@ -64,6 +64,85 @@ if ($userId) {
     $stmt->execute();
     $stmt->close();
 }
+
+// After order and order_items insertion, send confirmation email to user
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require_once '../../PHPMailer-master/src/PHPMailer.php';
+require_once '../../PHPMailer-master/src/SMTP.php';
+require_once '../../PHPMailer-master/src/Exception.php';
+
+// Prepare email details for user
+$user_email = $order['customer']['email'];
+$user_name = $order['customer']['name'];
+$order_amount = $order['amount'];
+$order_txn = $order['transaction_id'];
+$order_date = $formattedDate ?? date('F j, Y, g:i a');
+$order_address = $order['customer']['address'];
+
+// Send email to user
+$mail = new PHPMailer(true);
+try {
+    $mail->isSMTP();
+    $mail->Host = 'smtp.gmail.com';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'np03cs4s230163@heraldcollege.edu.np';
+    $mail->Password = 'molz jglm dojv bnsw';
+    $mail->SMTPSecure = 'tls';
+    $mail->Port = 587;
+
+    $mail->setFrom('np03cs4s230163@heraldcollege.edu.np', 'Biku Bike Rentals');
+    $mail->addAddress($user_email, $user_name);
+    $mail->isHTML(true);
+    $mail->Subject = 'Order Confirmation - Biku Bike Rentals';
+    $mail->Body = "
+        <h3>Dear $user_name,</h3>
+        <p>Thank you for your order!</p>
+        <p>Your order has been placed successfully.</p>
+        <ul>
+            <li><strong>Transaction ID:</strong> $order_txn</li>
+            <li><strong>Date:</strong> $order_date</li>
+            <li><strong>Total Paid:</strong> Rs. $order_amount</li>
+            <li><strong>Delivery Address:</strong> $order_address</li>
+        </ul>
+        <p>We appreciate your business.<br>Biku Bike Rentals Team</p>
+    ";
+    $mail->send();
+} catch (Exception $e) {
+    error_log('Order confirmation mail error: ' . $mail->ErrorInfo);
+}
+
+// Send email to admin(s)
+try {
+    $admin_email = 'np03cs4s230163@heraldcollege.edu.np';  
+    $mail_admin = new PHPMailer(true);
+    $mail_admin->isSMTP();
+    $mail_admin->Host = 'smtp.gmail.com';
+    $mail_admin->SMTPAuth = true;
+    $mail_admin->Username = 'np03cs4s230163@heraldcollege.edu.np';
+    $mail_admin->Password = 'molz jglm dojv bnsw';
+    $mail_admin->SMTPSecure = 'tls';
+    $mail_admin->Port = 587;
+
+    $mail_admin->setFrom('np03cs4s230163@heraldcollege.edu.np', 'Biku Bike Rentals');
+    $mail_admin->addAddress($admin_email, 'Admin');
+    $mail_admin->isHTML(true);
+    $mail_admin->Subject = 'New Order Placed - Biku Bike Rentals';
+    $mail_admin->Body = "
+        <h3>New Order Received</h3>
+        <ul>
+            <li><strong>Customer Name:</strong> $user_name</li>
+            <li><strong>Customer Email:</strong> $user_email</li>
+            <li><strong>Transaction ID:</strong> $order_txn</li>
+            <li><strong>Date:</strong> $order_date</li>
+            <li><strong>Total Paid:</strong> Rs. $order_amount</li>
+            <li><strong>Delivery Address:</strong> $order_address</li>
+        </ul>
+    ";
+    $mail_admin->send();
+} catch (Exception $e) {
+    error_log('Admin order notification mail error: ' . $mail_admin->ErrorInfo);
+}
 ?>
 
 <!DOCTYPE html>

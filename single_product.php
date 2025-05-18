@@ -28,8 +28,34 @@ if(isset($_POST['add_to_cart'])) {
     }
 
     $product_id = $_POST['product_id'];
-    $quantity = isset($_POST['product_quantity']) ? max(1, intval($_POST['product_quantity'])) : 1;
+    $quantity = 1;
     $user_id = $_SESSION['user_id'];
+
+    // Check if product is available first
+    $avail_check = $conn->prepare("SELECT availability FROM products WHERE product_id = ?");
+    $avail_check->bind_param("i", $product_id);
+    $avail_check->execute();
+    $avail_result = $avail_check->get_result();
+    $is_available = $avail_result->fetch_assoc()['availability'] ?? 0;
+    
+    if(!$is_available) {
+        // Product is unavailable, redirect back with error
+        header('location: single_product.php?product_id=' . $product_id . '&error=Product is currently unavailable');
+        exit;
+    }
+
+    // Check if user_id exists in users table before inserting into cart
+    $user_check = $conn->prepare("SELECT user_id FROM users WHERE user_id = ?");
+    $user_check->bind_param("i", $user_id);
+    $user_check->execute();
+    $user_check_result = $user_check->get_result();
+
+    if($user_check_result->num_rows == 0) {
+        // User does not exist, force logout and redirect to login
+        session_destroy();
+        header('location: login.php?message=Your account does not exist. Please login again.');
+        exit;
+    }
 
     // Check if product already in cart
     $check_stmt = $conn->prepare("SELECT * FROM cart WHERE user_id = ? AND product_id = ?");
@@ -56,6 +82,14 @@ if(isset($_POST['add_to_cart'])) {
 include('layouts/header.php');
 ?>
 
+<!-- Display error message if product is unavailable -->
+<?php if(isset($_GET['error'])): ?>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <?php echo htmlspecialchars($_GET['error']); ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<?php endif; ?>
+
 <!-- Single Product -->
 <section class="container single-product my-5 pt-5">
     <div class="row mt-5">
@@ -81,14 +115,23 @@ include('layouts/header.php');
             <div class="col-lg-6 col-md-12 col-12">
                 <h6>BIKES</h6>
                 <h3 class="py-4"><?php echo $row['product_name']; ?></h3>
-                <h2>$<?php echo $row['product_price']; ?></h2>
+                <h2>NPR-<?php echo $row['product_price']; ?></h2>
+                
+                <!-- Display availability status -->
+                <div class="mb-3">
+                    <span class="badge <?php echo isset($row['availability']) && $row['availability'] ? 'bg-success' : 'bg-danger'; ?> p-2">
+                        <?php echo isset($row['availability']) && $row['availability'] ? 'Available' : 'Currently Unavailable'; ?>
+                    </span>
+                </div>
+                
                 <form method="POST" action="">
                     <input type="hidden" name="product_id" value="<?php echo $row['product_id']; ?>"/>
                     <input type="hidden" name="product_image" value="<?php echo $row['product_image']; ?>"/>
                     <input type="hidden" name="product_name" value="<?php echo $row['product_name']; ?>"/>
                     <input type="hidden" name="product_price" value="<?php echo $row['product_price']; ?>"/>
-                    <input type="number" name="product_quantity" value="1"/>
-                    <button class="buy-btn" type="submit" name="add_to_cart">Add to Cart</button>
+                    <button class="buy-btn" type="submit" name="add_to_cart" <?php echo isset($row['availability']) && !$row['availability'] ? 'disabled' : ''; ?>>
+                        <?php echo isset($row['availability']) && $row['availability'] ? 'Add to Cart' : 'Unavailable'; ?>
+                    </button>
                 </form>
 
                 <h4 class="mt-5 mb-5">Product Details</h4>
@@ -116,7 +159,7 @@ include('layouts/header.php');
                 <i class="fas fa-star"></i>
             </div>
             <h5 class="p-name">Yamaha R1</h5>
-            <h4 class="p-price">$120</h4>
+            <h4 class="p-price">NPR120</h4>
             <button class="buy-btn">Buy Now</button>
         </div>
         <div class="product text-center col-lg-3 col-3 col-md-4 col-sm-12">
@@ -129,7 +172,7 @@ include('layouts/header.php');
                 <i class="fas fa-star"></i>
             </div>
             <h5 class="p-name">Yamaha MT 125</h5>
-            <h4 class="p-price">$120</h4>
+            <h4 class="p-price">NPR-120</h4>
             <button class="buy-btn">Buy Now</button>
         </div>
         <div class="product text-center col-lg-3 col-3 col-md-4 col-sm-12">
@@ -142,7 +185,7 @@ include('layouts/header.php');
                 <i class="fas fa-star"></i>
             </div>
             <h5 class="p-name">Yamaha-YZF-R6</h5>
-            <h4 class="p-price">$120</h4>
+            <h4 class="p-price">NPR-120</h4>
             <button class="buy-btn">Buy Now</button>
         </div>
         <div class="product text-center col-lg-3 col-3 col-md-4 col-sm-12">
@@ -155,7 +198,7 @@ include('layouts/header.php');
                 <i class="fas fa-star"></i>
             </div>
             <h5 class="p-name">Yamaha-MT-03</h5>
-            <h4 class="p-price">$120</h4>
+            <h4 class="p-price">NPR-120</h4>
             <button class="buy-btn">Buy Now</button>
         </div>
     </div>

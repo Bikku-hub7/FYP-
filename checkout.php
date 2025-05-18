@@ -1,21 +1,43 @@
 <?php
 session_start();
 include('layouts/header.php');
+include('server/connection.php');
 
-// Dummy session data for testing
-// Remove or replace with actual logic in production
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [['name' => 'Item 1', 'price' => 50]];
-    $_SESSION['total'] = 100;
+// Recalculate cart total for accuracy
+$total_price = 0;
+$cart_items = []; // Ensure $cart_items is always defined
+
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $stmt = $conn->prepare("SELECT c.*, p.product_price FROM cart c JOIN products p ON c.product_id = p.product_id WHERE c.user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $cart_items = [];
+    while ($item = $result->fetch_assoc()) {
+        $total_price += $item['product_price'] * $item['quantity'];
+        $cart_items[] = $item;
+    }
+    // Store cart items in session for payment gateway if needed
+    $_SESSION['cart'] = $cart_items;
+} else {
+    // fallback for guest cart (if any)
+    $cart_items = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+    $total_price = 0;
+    foreach ($cart_items as $item) {
+        $total_price += $item['product_price'] * $item['quantity'];
+    }
 }
 
 $order_id = 'ORD' . uniqid();
 $order_name = 'Order #' . rand(1000, 9999);
-$amount = $_SESSION['total'] ?? 0;
+$amount = $total_price;
 ?>
 
 <!-- Checkout Page -->
 <section class="my-5 py-5">
+    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <div class="container text-center mt-3 pt-5">
         <h2 class="font-weight-bold">Check Out</h2>
         <hr class="mx-auto">

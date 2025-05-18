@@ -8,6 +8,43 @@ if(!isset($_SESSION['staff_id'])) {
     exit();
 }
 
+// Handle availability toggle
+if(isset($_GET['toggle_availability']) && !empty($_GET['toggle_availability'])) {
+    $product_id = $_GET['toggle_availability'];
+    
+    // Get current availability status
+    $check_sql = "SELECT availability FROM products WHERE product_id = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("i", $product_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+    $current_status = $check_result->fetch_assoc()['availability'];
+    
+    // Toggle availability
+    $new_status = $current_status ? 0 : 1;
+    $update_sql = "UPDATE products SET availability = ? WHERE product_id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param("ii", $new_status, $product_id);
+    
+    if($update_stmt->execute()) {
+        $message = "Product availability updated successfully!";
+        $message_type = "success";
+    } else {
+        $message = "Error updating availability: " . $conn->error;
+        $message_type = "danger";
+    }
+    
+    $update_stmt->close();
+    
+    // Redirect to maintain the current filters and page
+    $redirect = "products.php?page=" . $page;
+    if($categoryFilter) {
+        $redirect .= "&category=" . urlencode($categoryFilter);
+    }
+    header("Location: $redirect");
+    exit();
+}
+
 // Handle category filter
 $categoryFilter = isset($_GET['category']) ? $_GET['category'] : '';
 $whereClause = $categoryFilter ? "WHERE product_category = '$categoryFilter'" : "";
@@ -17,6 +54,7 @@ $categories = $conn->query("SELECT DISTINCT product_category FROM products ORDER
 
 // Pagination
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1; // Ensure page is at least 1
 $recordsPerPage = 10;
 $offset = ($page - 1) * $recordsPerPage;
 
@@ -105,6 +143,7 @@ $products = $conn->query("SELECT * FROM products $whereClause ORDER BY product_i
                                         <th>Category</th>
                                         <th>Price</th>
                                         <th>Color</th>
+                                        <th>Availability</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -120,6 +159,12 @@ $products = $conn->query("SELECT * FROM products $whereClause ORDER BY product_i
                                             <td><?php echo $product['product_category']; ?></td>
                                             <td>$<?php echo number_format($product['product_price'], 2); ?></td>
                                             <td><?php echo $product['product_color']; ?></td>
+                                            <td>
+                                                <a href="?toggle_availability=<?php echo $product['product_id']; ?>&page=<?php echo $page; ?><?php echo $categoryFilter ? '&category='.urlencode($categoryFilter) : ''; ?>" 
+                                                   class="btn btn-sm <?php echo isset($product['availability']) && $product['availability'] ? 'btn-success' : 'btn-secondary'; ?>">
+                                                    <?php echo isset($product['availability']) && $product['availability'] ? 'Available' : 'Unavailable'; ?>
+                                                </a>
+                                            </td>
                                             <td>
                                                 <div class="btn-group">
                                                     <a href="edit_product.php?id=<?php echo $product['product_id']; ?>" class="btn btn-sm btn-primary">
@@ -156,7 +201,7 @@ $products = $conn->query("SELECT * FROM products $whereClause ORDER BY product_i
                                         <?php endwhile; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="7" class="text-center">No products found</td>
+                                            <td colspan="8" class="text-center">No products found</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
